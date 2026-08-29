@@ -13,23 +13,23 @@ PersuaRL: Reinforcement Learning-Driven Multi-Expert Selection<br>for Persuasive
     <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/License-MIT-8250DF?style=for-the-badge"></a>
 </p>
 
-Large language models are fluent but not, by default, *persuasive*. In domains
-like motor insurance an agent has to infer what the user wants, adapt to how they
-feel, surface the right policy detail, and guide a decision without pressuring
-it — requirements that exceed what a monolithic LLM does well in one pass.
+Large language models are fluent but not, by default, *persuasive*. In a domain
+like motor insurance an agent has to work out what the user actually wants, adapt
+to how they feel, surface the right policy detail, and steer a decision without
+pushing it. That is a lot to ask of a monolithic LLM in a single pass.
 
-**PersuaRL** reframes this as a sequential decision problem. A lightweight
+**PersuaRL** treats it as a sequential decision problem instead. A lightweight
 **Selector**, trained with GRPO, learns *which subset of expert modules to
 consult at each dialogue turn*. Four **Experts** analyse the turn along
-complementary axes. A **Generator** fuses the selected signals into a response.
-A five-part composite reward — with no intermediate supervision — teaches the
-Selector coordination patterns that balance intent alignment, emotional
-adaptation, strategy selection, relevance and diversity.
+complementary axes, and a **Generator** fuses the selected signals into a
+response. A five-part composite reward, with no intermediate supervision, is what
+teaches the Selector to balance intent alignment, emotional adaptation, strategy
+selection, relevance and diversity.
 
 Because the Selector's choice is a learned action rather than a fixed heuristic,
 the Selector and Generator **co-adapt**: the Generator gets better at using the
-routes the Selector picks, and the Selector discovers routes the Generator
-exploits well.
+routes the Selector picks, and the Selector finds routes the Generator handles
+well.
 
 ---
 
@@ -54,12 +54,12 @@ exploits well.
 | | |
 |---|---|
 | **The method** | Selector GRPO with constrained decoding, co-adapting Generator, and the full R1–R5 composite reward |
-| **The dataset** | InsureDial — 1,931 dialogues, 13,383 turns, annotated on four dimensions, plus precomputed expert outputs |
+| **The dataset** | InsureDial: 1,931 dialogues, 13,383 turns, annotated on four dimensions, plus precomputed expert outputs |
 | **The baselines** | single-shot, SFT, single-model GRPO, warm-start GRPO, AllExpert, prompted routing |
 | **The ablations** | every table in Appendix D, each a flag on an existing script |
 | **The evaluation** | BLEU-2, METEOR, BERTScore-F1, Distinct-2, ROUGE-1, perplexity, LLM-as-a-judge |
 
-Any causal LM works as the Selector, the Generator or an expert — backbones are
+Any causal LM works as the Selector, the Generator or an expert. Backbones are
 config values, and LoRA target modules are auto-detected per architecture.
 
 ---
@@ -87,7 +87,7 @@ config values, and LoRA target modules are auto-detected per architecture.
 ```
 
 **Selector.** At turn *t* the policy sees `(history, user utterance)` and emits a
-binary mask `o_t ∈ {0,1}⁴` — one of **15 non-empty routes**, encoded as a single
+binary mask `o_t ∈ {0,1}⁴`, one of **15 non-empty routes**, encoded as a single
 constrained token `A`–`O`. One forward pass, one token, no JSON parsing and no
 malformed-route retries.
 
@@ -105,7 +105,7 @@ malformed-route retries.
 rewards are computed; SFT'd on the best rollout of each GRPO group.
 
 **Reward.** `R = 0.15·R1 + 0.15·R2 + 0.20·R3 + 0.15·R4 + 0.35·R5`, minus three
-penalties that shape the *routing decision* rather than the response — complexity
+penalties that shape the *routing decision* rather than the response: complexity
 (don't select everything), route repetition (keep exploring), and load balance
 (keep all four experts contributing). Full derivation in
 **[docs/rewards.md](docs/rewards.md)**.
@@ -138,7 +138,7 @@ monotonically across every backbone.
 | **DEAL** (OOD) | Llama 3.2 3B (SFT) | 0.080 | **0.104** | 0.552 | 0.986 | 0.267 | 2.64 |
 | | **PersuaRL (Llama 3.2 3B)** | **0.087** | 0.101 | 0.536 | **0.987** | **0.278** | **2.79** |
 
-A 3B PersuaRL model beats 14–70B baselines on BERT-F1 — Phi-3 mini exceeds
+A 3B PersuaRL model beats 14–70B baselines on BERT-F1: Phi-3 mini exceeds
 Phi-3 Medium 14B by ~16% and Qwen 3 32B by over 23%.
 
 **Human evaluation** (5-point scale, domain experts, 30% of the test set):
@@ -175,7 +175,7 @@ bash scripts/setup_env.sh --no-torch
 `setup_env.sh` installs the package, fetches the NLTK tokenizer data, creates
 `.env` from the template, and prints a verification report.
 
-Then edit `.env` — at minimum set `HF_TOKEN` if you plan to use gated backbones
+Then edit `.env`. At minimum set `HF_TOKEN` if you plan to use gated backbones
 (Llama, Mistral):
 
 ```bash
@@ -253,8 +253,8 @@ Stage 1 is optional because the repo ships expert annotations for every turn.
 Train the experts if you want a different backbone, a different label space, or
 to annotate a new corpus.
 
-Full detail — including what to watch during RL, and what each signal means when
-it goes wrong — in **[docs/pipeline.md](docs/pipeline.md)**.
+**[docs/pipeline.md](docs/pipeline.md)** has the full detail, including what to
+watch during RL and what each signal means when it goes wrong.
 
 ### Baselines
 
@@ -271,7 +271,7 @@ bash scripts/inference/run_pipeline.sh --mode prompting                   # prom
 ## Using your own backbones
 
 Every model in the system is a config value. SFT and GRPO both work on any causal
-LM without touching code — LoRA target modules are detected from the loaded
+LM without touching code. LoRA target modules are detected from the loaded
 model, so Llama's separate `q_proj`/`k_proj`/`v_proj`, Phi-3's fused `qkv_proj`
 and GPT-NeoX's `query_key_value` are all handled.
 
@@ -314,7 +314,7 @@ bash scripts/inference/run_pipeline.sh --mode prompting     # Fig. 2/4/5: prompt
 bash scripts/rl/train_grpo_single.sh                        # Table 13: GRPO, no selector
 ```
 
-Reward ablation on Qwen 2.5 3B (Table 12) — R1, R2 and R5 are load-bearing:
+Reward ablation on Qwen 2.5 3B (Table 12). R1, R2 and R5 are load-bearing:
 
 | configuration | BLEU-2 | METEOR | BERT-F1 | Distinct-2 | ROUGE-1 |
 |---|---|---|---|---|---|
@@ -386,8 +386,8 @@ Stated plainly, following the paper:
   exponentially in the number of experts. GRPO stabilises learning over it, but
   it does not make it scale indefinitely.
 - Invoking several experts per turn costs latency and compute. PersuaRL takes
-  ~1.4× the inference time of an SFT baseline — a deliberate trade, not a free
-  lunch.
+  ~1.4× the inference time of an SFT baseline. That is a deliberate trade, not a
+  free lunch.
 - The framework is evaluated on 3B–30B backbones. Running the full pipeline with
   large LLMs as *both* Selector and Generator was not feasible under the
   available compute.
@@ -423,5 +423,5 @@ LLM-as-a-judge reward model. Thanks to the authors of all five.
 
 ## License
 
-MIT — see [LICENSE](LICENSE). InsureDial is released for research use; see
+MIT. See [LICENSE](LICENSE). InsureDial is released for research use; see
 [data/README.md](data/README.md#ethics-and-intended-use).
