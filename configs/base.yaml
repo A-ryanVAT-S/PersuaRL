@@ -1,0 +1,32 @@
+# Shared defaults. Every other config inherits from this via `defaults: [...]`.
+# Paths honour DATA_ROOT / MODELS_ROOT from your .env.
+
+seed: 42
+
+paths:
+  data_root: "${DATA_ROOT:-./data}"
+  models_root: "${MODELS_ROOT:-./outputs}"
+
+data:
+  dialogues_path: "${DATA_ROOT:-./data}/insuredial/dialogues.csv"
+
+  # Precomputed expert answers, joined on (conversation_id, turn_no).
+  expert_outputs:
+    engagement: "${DATA_ROOT:-./data}/insuredial/expert_outputs/engagement.csv"
+    intent: "${DATA_ROOT:-./data}/insuredial/expert_outputs/intent.csv"
+    keyterm: "${DATA_ROOT:-./data}/insuredial/expert_outputs/keyterm.csv"
+    sentiment: "${DATA_ROOT:-./data}/insuredial/expert_outputs/sentiment.csv"
+
+  # Conversation-level, never row-level. 0.80/0.05 reproduces Table 1;
+  # the RL and inference configs override to 0.85/0.0.
+  train_ratio: 0.80
+  validation_ratio: 0.05
+
+# LoRA defaults. `target_modules: null` means auto-detect from the loaded
+# model, which is what lets one config train a Llama, a Qwen or a Phi.
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: null
+  attention_only: false

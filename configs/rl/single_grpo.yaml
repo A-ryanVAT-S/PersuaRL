@@ -1,0 +1,46 @@
+# Single-model GRPO baseline: no Selector, no experts. Table 13 (D.3.3).
+# The policy generates the agent reply directly, scored by the same composite
+# reward PersuaRL uses (minus the routing penalties -- there is no route).
+#
+#   python -m persuarl.cli.train_single_grpo --config configs/rl/single_grpo.yaml
+
+defaults: [../base.yaml, ../models/llama32-3b.yaml, ../rewards/insuredial.yaml]
+
+output_dir: "${MODELS_ROOT:-./outputs}/grpo_single"
+reward_device: cuda
+
+model:
+  adapter_path: null        # cold start, straight from the instruct checkpoint
+  dtype: float16
+  quantization:
+    bits: 4
+
+rewards:
+  contextual:
+    # No Generator here, so R3 scores against the reference reply rather than
+    # the (context, utterance) pair.
+    use_reference: true
+
+data:
+  train_ratio: 0.85
+  validation_ratio: 0.0
+  include_history: true
+
+train:
+  epochs: 1
+  batch_size: 8
+  gradient_accumulation_steps: 2
+  learning_rate: 2.0e-5
+  warmup_ratio: 0.03
+  num_generations: 4
+  max_prompt_length: 1024
+  max_completion_length: 256
+  temperature: 0.9
+  top_p: 1.0
+  kl_beta: 0.04
+  clip_epsilon: 0.2
+  loss_type: bnpo
+  save_steps: 100
+  logging_steps: 1
+  log_every: 1
+  report_to: [tensorboard]

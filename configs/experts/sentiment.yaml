@@ -1,0 +1,6 @@
+# sentiment expert.
+defaults: [base.yaml]
+
+expert: sentiment
+data:
+  path: "${DATA_ROOT:-./data}/processed/experts/sentiment.csv"

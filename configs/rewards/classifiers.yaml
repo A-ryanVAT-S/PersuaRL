@@ -1,0 +1,29 @@
+# Train the R1/R2 reward classifiers and build their class prototypes.
+#   python -m persuarl.cli.train_reward_models --config configs/rewards/classifiers.yaml
+#
+# bert-base-uncased reproduces Table 9 (ESCR 82.14 acc, ICR 84.91 acc).
+# Swap base_model_id for answerdotai/ModernBERT-base or distilbert-base-uncased
+# to reproduce the other rows.
+
+defaults: [../base.yaml]
+
+base_model_id: bert-base-uncased
+output_dir: "${MODELS_ROOT:-./outputs}/reward_models"
+
+engagement:
+  dataset_path: "${DATA_ROOT:-./data}/processed/classifiers/engagement.csv"
+  text_column: utterance
+  label_column: label
+
+intent:
+  dataset_path: "${DATA_ROOT:-./data}/processed/classifiers/intent.csv"
+  text_column: utterance
+  label_column: label
+
+train:
+  epochs: 2
+  batch_size: 16
+  learning_rate: 2.0e-5
+  weight_decay: 0.01
+  max_length: 512
+  fp16: true

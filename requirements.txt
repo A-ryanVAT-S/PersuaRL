@@ -1,0 +1,35 @@
+# PersuaRL dependencies.
+#
+# Install torch FIRST, matched to your CUDA version -- pip cannot pick the
+# right wheel from this file and will happily give you a CPU build:
+#   pip install torch --index-url https://download.pytorch.org/whl/cu121
+#
+# Then:  pip install -r requirements.txt   (or: pip install -e .)
+
+# --- core training stack -------------------------------------------------
+transformers>=4.44.0,<5.0.0
+trl>=0.12.0             # GRPOTrainer / GRPOConfig
+peft>=0.11.0            # LoRA / QLoRA adapters
+accelerate>=0.30.0
+datasets>=2.19.0
+bitsandbytes>=0.43.0    # 4-/8-bit loading (Linux/WSL; see docs/troubleshooting.md)
+
+# --- reward models -------------------------------------------------------
+bert-score>=0.3.13      # R3 contextual appropriateness
+sentencepiece>=0.2.0    # tokenizers for Llama/Mistral/Prometheus
+protobuf>=4.25.0
+
+# --- metrics -------------------------------------------------------------
+rouge-score>=0.1.2
+nltk>=3.8.1
+scikit-learn>=1.3.0
+evaluate>=0.4.1
+
+# --- data / config / IO --------------------------------------------------
+pandas>=2.0.0
+numpy>=1.24.0,<2.0.0    # bitsandbytes and bert-score are not all numpy-2 clean
+pyyaml>=6.0
+tqdm>=4.66.0
+
+# --- logging (optional but wired up) ------------------------------------
+tensorboard>=2.15.0

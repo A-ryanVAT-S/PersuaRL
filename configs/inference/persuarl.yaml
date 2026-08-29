@@ -1,0 +1,55 @@
+# Full pipeline inference: Selector -> Experts -> Generator.
+#   python -m persuarl.cli.run_pipeline --config configs/inference/persuarl.yaml
+#
+# Ablation modes (D.3.2), same config:
+#   --set routing_mode=all         AllExpert: every expert, every turn
+#   --set routing_mode=prompting   prompted selection, no RL
+#   --set expert_source=live       call the expert LMs instead of the cache
+
+defaults: [../base.yaml]
+
+output_path: results/persuarl.csv
+verbose: false
+max_conversations: null    # set to a small int for a smoke run
+
+# persuarl | all | prompting
+routing_mode: persuarl
+
+# cached  -- look answers up in data/insuredial/expert_outputs (fast; the paper)
+# live    -- call the expert LMs per turn (slower; honest latency)
+expert_source: cached
+
+selector:
+  id: Qwen/Qwen2.5-3B-Instruct
+  adapter_path: "${MODELS_ROOT:-./outputs}/persuarl/selector"
+  dtype: bfloat16
+  device_map: auto
+  temperature: 0.8
+
+generator:
+  id: microsoft/Phi-3-mini-128k-instruct
+  adapter_path: "${MODELS_ROOT:-./outputs}/persuarl/generator"
+  dtype: bfloat16
+  device_map: auto
+  # Appendix D.2 inference settings.
+  max_new_tokens: 512
+  temperature: 0.8
+  top_p: 0.95
+  top_k: 40
+
+# Only consulted when expert_source: live.
+experts:
+  id: meta-llama/Llama-3.2-3B-Instruct
+  engagement:
+    adapter_path: "${MODELS_ROOT:-./outputs}/experts/engagement"
+  intent:
+    adapter_path: "${MODELS_ROOT:-./outputs}/experts/intent"
+  keyterm:
+    adapter_path: "${MODELS_ROOT:-./outputs}/experts/keyterm"
+  sentiment:
+    adapter_path: "${MODELS_ROOT:-./outputs}/experts/sentiment"
+
+data:
+  # MUST match the RL config, or you are evaluating on a different test set.
+  train_ratio: 0.85
+  validation_ratio: 0.0

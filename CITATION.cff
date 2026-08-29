@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this code or the InsureDial dataset, please cite the paper below."
+title: "PersuaRL: Reinforcement Learning-Driven Multi-Expert Selection for Persuasive Dialogue Generation in Insurance"
+abstract: >-
+  PersuaRL is a reinforcement learning framework that equips LLM-driven dialogue
+  agents with the ability to adaptively explore, select and coordinate across
+  multiple expert modules, guided by the evolving dialogue context, to achieve
+  more effective persuasion. It is accompanied by InsureDial, a persuasive motor
+  insurance dialogue dataset annotated for persuasion strategy, user intent,
+  sentiment and key domain terms.
+authors:
+  - name: "Anonymous ACL submission"
+version: "1.0.0"
+license: MIT
+keywords:
+  - reinforcement learning
+  - persuasive dialogue
+  - large language models
+  - GRPO
+  - multi-expert systems

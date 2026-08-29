@@ -1,0 +1,8 @@
+# Llama 3.2 3B Instruct -- the paper's primary small backbone.
+model:
+  id: meta-llama/Llama-3.2-3B-Instruct
+  dtype: bfloat16
+  device_map: auto
+  trust_remote_code: false
+  quantization:
+    bits: null          # fits unquantised on one 80GB card

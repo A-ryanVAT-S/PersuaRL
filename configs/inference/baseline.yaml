@@ -1,0 +1,16 @@
+# Single-model inference (single-shot, SFT or single-model GRPO).
+# Routing is forced to `all` and the analysis block is empty, so the Generator
+# sees only (history, user utterance) -- the baseline setting of Section 5.2.
+#
+#   python -m persuarl.cli.run_pipeline --config configs/inference/baseline.yaml \
+#       --set generator.adapter_path=outputs/sft_baseline
+
+defaults: [persuarl.yaml]
+
+output_path: results/baseline.csv
+routing_mode: all
+
+generator:
+  id: meta-llama/Llama-3.2-3B-Instruct
+  # null -> single-shot (no fine-tuning at all)
+  adapter_path: "${MODELS_ROOT:-./outputs}/sft_baseline"

@@ -1,0 +1,42 @@
+# Shared settings for all four expert modules.
+# The per-expert files below override only `expert` and `data.path`.
+#
+#   python -m persuarl.cli.train_expert --config configs/experts/base.yaml --expert all
+
+defaults: [../base.yaml, ../models/llama32-3b.yaml]
+
+expert: all
+output_dir: "${MODELS_ROOT:-./outputs}/experts"
+
+model:
+  # Experts are small analysis models; 4-bit keeps four of them affordable.
+  quantization:
+    bits: 4
+    quant_type: nf4
+    compute_dtype: bfloat16
+
+data:
+  # Written by scripts/prepare_data.sh.
+  path: "${DATA_ROOT:-./data}/processed/experts/engagement.csv"
+  text_column: utterance
+  label_column: label
+  reason_column: reason
+  max_length: 1024
+  train_ratio: 0.80
+  validation_ratio: 0.05
+
+train:
+  epochs: 3
+  batch_size: 2
+  gradient_accumulation_steps: 4
+  learning_rate: 2.0e-4
+  warmup_ratio: 0.03
+  eval_strategy: steps
+  eval_steps: 500
+  save_strategy: steps
+  save_steps: 500
+  save_total_limit: 2
+  logging_steps: 50
+  load_best_model_at_end: true
+  gradient_checkpointing: false
+  report_to: [tensorboard]

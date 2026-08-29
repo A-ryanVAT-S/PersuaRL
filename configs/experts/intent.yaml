@@ -1,0 +1,6 @@
+# intent expert.
+defaults: [base.yaml]
+
+expert: intent
+data:
+  path: "${DATA_ROOT:-./data}/processed/experts/intent.csv"

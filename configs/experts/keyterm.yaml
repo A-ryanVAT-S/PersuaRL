@@ -1,0 +1,6 @@
+# keyterm expert.
+defaults: [base.yaml]
+
+expert: keyterm
+data:
+  path: "${DATA_ROOT:-./data}/processed/experts/keyterm.csv"

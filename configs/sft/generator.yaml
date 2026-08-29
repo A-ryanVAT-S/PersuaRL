@@ -1,0 +1,41 @@
+# Generator SFT -- the expert-conditioned warm start for PersuaRL.
+#   python -m persuarl.cli.train_sft --config configs/sft/generator.yaml
+#
+# Do not skip this stage. An un-adapted Generator cannot exploit the
+# <expert>...</expert> blocks, so every route scores alike and the Selector
+# gets no gradient (Table 15).
+
+defaults: [../base.yaml, ../models/phi3-mini.yaml]
+
+output_dir: "${MODELS_ROOT:-./outputs}/generator_sft"
+
+data:
+  style: generator          # expert-conditioned prompts
+
+  # Which experts appear in each training example's analysis block:
+  #   all     every expert, every turn  (default warm start)
+  #   random  a random route per turn   (robustness to any subset)
+  #   logged  replay best_routes.csv from a finished RL run
+  route_source: all
+  routes_path: null         # required only when route_source: logged
+
+  max_length: 1536
+  include_history: true
+
+train:
+  epochs: 1
+  batch_size: 2
+  gradient_accumulation_steps: 4
+  learning_rate: 2.0e-4
+  warmup_ratio: 0.03
+  lr_scheduler_type: linear
+  eval_strategy: steps
+  eval_steps: 500
+  save_strategy: steps
+  save_steps: 500
+  save_total_limit: 2
+  logging_steps: 50
+  load_best_model_at_end: true
+  gradient_checkpointing: false
+  bf16: true
+  report_to: [tensorboard]

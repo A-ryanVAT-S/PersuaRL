@@ -1,0 +1,6 @@
+# engagement expert.
+defaults: [base.yaml]
+
+expert: engagement
+data:
+  path: "${DATA_ROOT:-./data}/processed/experts/engagement.csv"

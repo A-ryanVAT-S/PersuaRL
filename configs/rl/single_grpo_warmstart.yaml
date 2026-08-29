@@ -1,0 +1,18 @@
+# Warm-start GRPO: the "Single -> SFT -> RL" progression of Table 2.
+# Identical to single_grpo.yaml except that an SFT adapter is merged into the
+# base weights before a fresh LoRA is attached.
+#
+# Merging matters: with two live adapters the RL gradient works against the SFT
+# adapter as well as the base model, and the effective learning rate on the
+# composition is not the one you configured.
+#
+#   python -m persuarl.cli.train_single_grpo --config configs/rl/single_grpo_warmstart.yaml
+
+defaults: [single_grpo.yaml]
+
+output_dir: "${MODELS_ROOT:-./outputs}/grpo_single_warmstart"
+
+model:
+  adapter_path: "${MODELS_ROOT:-./outputs}/sft_baseline"
+  quantization:
+    bits: null    # merge_and_unload needs unquantised base weights

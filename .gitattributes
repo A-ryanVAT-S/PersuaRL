@@ -1,0 +1,25 @@
+# Normalise line endings in the repository to LF.
+#
+# This is not cosmetic: a shell script checked in with CRLF fails on Linux with
+# "bash: $'\r': command not found", which is exactly how a repo authored on
+# Windows breaks for everyone who clones it on a GPU box.
+
+* text=auto eol=lf
+
+# Always LF, regardless of platform -- these are executed, not edited.
+*.sh    text eol=lf
+*.py    text eol=lf
+*.yaml  text eol=lf
+*.yml   text eol=lf
+*.toml  text eol=lf
+*.cff   text eol=lf
+Makefile text eol=lf
+
+# Data files: text, but large. Diffing them is never useful.
+*.csv   text eol=lf -diff
+
+# Binary
+*.pdf   binary
+*.pt    binary
+*.png   binary
+*.jpg   binary

@@ -1,0 +1,86 @@
+# PersuaRL: GRPO over the expert-selection policy, with a co-adapting Generator.
+# This is the main experiment.
+#
+#   python -m persuarl.cli.train_selector --config configs/rl/persuarl.yaml
+#
+# Swap either backbone without touching code:
+#   --set selector.id=meta-llama/Llama-3.2-3B-Instruct
+#   --set generator.id=Qwen/Qwen2.5-3B-Instruct
+
+defaults: [../base.yaml, ../rewards/insuredial.yaml]
+
+output_dir: "${MODELS_ROOT:-./outputs}/persuarl/selector"
+generator_output_dir: "${MODELS_ROOT:-./outputs}/persuarl/generator"
+reward_device: cuda
+
+# ---------------------------------------------------------------------------
+# Selector -- the policy GRPO trains. Emits one constrained token per turn.
+# ---------------------------------------------------------------------------
+selector:
+  id: Qwen/Qwen2.5-3B-Instruct
+  dtype: auto
+  device_map: auto
+  trust_remote_code: false
+  lora:
+    r: 16
+    alpha: 32
+    dropout: 0.05
+    target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+
+# ---------------------------------------------------------------------------
+# Generator -- frozen while rewards are computed, SFT'd on the group's best
+# rollout. Point adapter_path at the Stage 3 output.
+# ---------------------------------------------------------------------------
+generator:
+  id: microsoft/Phi-3-mini-128k-instruct
+  adapter_path: "${MODELS_ROOT:-./outputs}/generator_sft"
+  merge_adapter: true       # fold SFT in so the co-adaptation LoRA starts clean
+  dtype: auto
+  device_map: auto
+  trust_remote_code: false
+  quantization:
+    bits: null
+
+  # Rollout decoding (Appendix D.2).
+  max_new_tokens: 128
+  temperature: 0.8
+  top_p: 0.95
+  top_k: 40
+  max_prompt_tokens: 1024
+
+  lora:
+    r: 16
+    alpha: 32
+    dropout: 0.05
+    target_modules: null    # auto-detect (Phi-3 fuses qkv_proj / gate_up_proj)
+
+data:
+  # RL uses the 85/15 split; keep it identical in the inference config or you
+  # are evaluating on a different test set.
+  train_ratio: 0.85
+  validation_ratio: 0.0
+
+train:
+  epochs: 1
+  batch_size: 2
+  gradient_accumulation_steps: 4
+  learning_rate: 2.0e-5
+  generator_learning_rate: 1.0e-5   # the co-adaptation SFT step
+  warmup_ratio: 0.03
+
+  num_generations: 8        # G: rollouts per turn, i.e. the GRPO group size
+  max_prompt_length: 512
+  max_completion_length: 4  # one route letter + EOS (+ slack)
+  temperature: 1.2          # high on purpose: the action space needs exploring
+  top_p: 1.0
+
+  kl_beta: 0.04             # KL regularisation toward the reference policy
+  clip_epsilon: 0.2         # the epsilon of Eq. 2
+  loss_type: bnpo
+
+  freeze_generator: false   # true reproduces ablation D.3.4 (Table 14)
+
+  save_steps: 200
+  logging_steps: 1
+  log_every: 1              # console reward breakdown every N batches
+  report_to: [tensorboard]

@@ -1,0 +1,8 @@
+# Data preparation: split the shipped expert answers back into (label, reason).
+#   python -m persuarl.cli.prepare_data --config configs/data.yaml
+
+defaults: [base.yaml]
+
+output:
+  experts_dir: "${DATA_ROOT:-./data}/processed/experts"
+  classifiers_dir: "${DATA_ROOT:-./data}/processed/classifiers"

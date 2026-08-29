@@ -1,0 +1,8 @@
+# Qwen 2.5 3B Instruct -- the ablation backbone (Tables 3, 11, 12).
+model:
+  id: Qwen/Qwen2.5-3B-Instruct
+  dtype: bfloat16
+  device_map: auto
+  trust_remote_code: false
+  quantization:
+    bits: null

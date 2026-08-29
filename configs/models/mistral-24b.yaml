@@ -1,0 +1,12 @@
+# Mistral Small 24B Instruct -- the large-backbone row of Table 2.
+# Needs 4-bit to leave room for the judge and reward models alongside it.
+model:
+  id: mistralai/Mistral-Small-24B-Instruct-2501
+  dtype: bfloat16
+  device_map: auto
+  trust_remote_code: false
+  quantization:
+    bits: 4
+    quant_type: nf4
+    compute_dtype: bfloat16
+    double_quant: true

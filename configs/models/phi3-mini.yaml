@@ -1,0 +1,10 @@
+# Phi-3 mini 128k Instruct.
+# Note: Phi-3 fuses QKV into `qkv_proj` and gate/up into `gate_up_proj`.
+# Leave lora.target_modules null and let auto-detection handle it.
+model:
+  id: microsoft/Phi-3-mini-128k-instruct
+  dtype: bfloat16
+  device_map: auto
+  trust_remote_code: false
+  quantization:
+    bits: null

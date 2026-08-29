@@ -1,0 +1,51 @@
+# The composite reward: R = sum_k beta_k * R_k, minus the routing penalties.
+# Included by every RL config; not meant to be run on its own.
+#
+# Weights are the tuned setting from Table 11 (PPL 3.917 on Qwen 2.5 3B).
+
+rewards:
+  weights:
+    engagement: 0.15    # beta_1  R1  engagement strategy consistency
+    intent: 0.15        # beta_2  R2  intent consistency
+    contextual: 0.20    # beta_3  R3  contextual appropriateness (BERTScore)
+    repetition: 0.15    # beta_4  R4  non-repetitiveness (Jaccard)
+    judge: 0.35         # beta_5  R5  LLM-as-a-judge
+
+  # Zero out components here for the Table 12 ablation, e.g. [engagement].
+  ablate: []
+
+  engagement:
+    classifier_path: ${MODELS_ROOT:-outputs}/reward_models/engagement_classifier
+    prototypes_path: ${MODELS_ROOT:-outputs}/reward_models/engagement_classifier/prototypes.pt
+    lambda_confidence: 0.1     # the lambda of Eq. 3
+
+  intent:
+    classifier_path: ${MODELS_ROOT:-outputs}/reward_models/intent_classifier
+    prototypes_path: ${MODELS_ROOT:-outputs}/reward_models/intent_classifier/prototypes.pt
+    lambda_confidence: 0.1     # the lambda of Eq. 4
+
+  contextual:
+    embedding_model: bert-base-uncased
+    batch_size: 32
+    utterance_weight: 2.0      # the latest turn counts double, per Eq. 5
+    # true -> score against the ground-truth reply instead of the context pair
+    use_reference: false
+
+  judge:
+    model_id: prometheus-eval/prometheus-7b-v2.0
+    dtype: float16
+    device_map: auto
+    max_new_tokens: 200
+    batch_size: 8
+
+  # Selector-shaping penalties. Appendix C.5.
+  penalties:
+    complexity_alpha: 0.025        # alpha: cost per activated expert
+    repetition_beta: 0.2           # beta:  route-repetition scaling
+    repetition_max: 0.15           # P_max
+    repetition_warmup: 16          # rollouts before repetition is penalised
+    load_balance_gamma: 0.4        # gamma: per-expert overuse penalty
+    load_balance_max: 0.15
+    load_balance_bonus_gamma: 0.05 # mirrored bonus for under-used experts
+    load_balance_bonus_max: 0.08
+    history_size: 200              # sliding window of recent routes
