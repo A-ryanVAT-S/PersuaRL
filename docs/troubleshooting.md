@@ -180,15 +180,6 @@ The join is on keys, not row order, on purpose — positional concatenation woul
 
 ---
 
-## `prepare_data.sh` reports thousands of unparseable intent rows
-
-Expected with the shipped files: `intent.csv` currently duplicates
-`engagement.csv`, so its answers are engagement prose and do not match the intent
-pattern. See [the data README](../data/README.md#known-issues-in-the-shipped-files)
-for what this affects and how to fix it. Training still runs; R2 contributes 0.
-
----
-
 ## NLTK `punkt` download fails
 
 R4 falls back to whitespace tokenisation automatically — the reward is slightly

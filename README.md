@@ -371,7 +371,7 @@ make test    # or: python -m pytest tests/ -v
 | **[docs/rewards.md](docs/rewards.md)** | R1–R5 derivations, the penalties, weight tuning, reward circularity |
 | **[docs/architecture.md](docs/architecture.md)** | code layout, design decisions, how to extend |
 | **[docs/troubleshooting.md](docs/troubleshooting.md)** | OOM, collapsed policies, flat rewards, gated downloads |
-| **[data/README.md](data/README.md)** | InsureDial schema, label spaces, **known issues in the shipped files** |
+| **[data/README.md](data/README.md)** | InsureDial schema, label spaces, expert-output formats |
 
 ---
 

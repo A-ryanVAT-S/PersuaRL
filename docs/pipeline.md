@@ -30,7 +30,6 @@ using the per-expert patterns in `experts/registry.py`.
 Takes under a minute, no GPU.
 
 Rows whose answer does not parse are counted and dropped, never guessed at.
-Expect a large drop count for `intent` — see [the data README](../data/README.md#known-issues-in-the-shipped-files).
 
 ---
 
