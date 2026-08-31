@@ -1,14 +1,13 @@
 # The pipeline, stage by stage
 
-Six stages. Each is a script, each is independently runnable, and each writes
+Seven stages. Each is a script, each is independently runnable, and each writes
 into `$MODELS_ROOT` where the next one picks it up.
 
-```
-prepare_data ──▶ experts ──▶ reward models ──▶ generator SFT ──▶ PersuaRL GRPO ──▶ inference ──▶ eval
-                    │              │                  │                 ▲
-                    └── cached ────┴── R1/R2 ─────────┴─────────────────┘
-                        answers       classifiers      warm start
-```
+Stages run in order 0 to 6: data preparation, expert modules, reward
+classifiers, generator SFT, selector GRPO, inference, evaluation. Three of them
+also feed sideways into the GRPO stage rather than only forward — Stage 1 caches
+the expert answers it scores against, Stage 2 trains the R1/R2 classifiers it
+rewards with, and Stage 3 produces the generator it warm-starts from.
 
 Everything below assumes `$MODELS_ROOT` (default `./outputs`) and `$DATA_ROOT`
 (default `./data`), both settable in `.env`.
