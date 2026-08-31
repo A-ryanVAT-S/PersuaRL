@@ -217,12 +217,10 @@ bash scripts/inference/run_pipeline.sh --limit 20 --verbose
 
 ## The pipeline
 
-```
-prepare_data ─▶ experts ─▶ reward models ─▶ generator SFT ─▶ PersuaRL GRPO ─▶ inference ─▶ eval
-                   │             │                │                 ▲
-                   └── cached ───┴── R1/R2 ───────┴─────────────────┘
-                       answers      classifiers    warm start
-```
+The seven stages run in order, each writing into `$MODELS_ROOT` where the next
+one picks it up. Three also feed sideways into Stage 4: Stage 1 caches the
+expert answers GRPO scores against, Stage 2 trains its R1/R2 classifiers, and
+Stage 3 is the generator it warm-starts from.
 
 | stage | script | writes | time |
 |---|---|---|---|
