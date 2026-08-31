@@ -66,25 +66,10 @@ config values, and LoRA target modules are auto-detected per architecture.
 
 ## How it works
 
-```
-                    ┌──────────────────── Experts (frozen) ────────────────────┐
-                    │  Engagement    Intent    Keyterm    Sentiment            │
-                    └───────▲──────────────────────────────┬───────────────────┘
-                            │ selected subset o_t          │ O_i = T_i(x_t)
-                            │                              ▼
-  Dialogue      ┌───────────┴────────────┐        ┌──────────────────┐
-  context  ───▶ │  SELECTOR   π_θ  🔥    │        │  GENERATOR  A_φ  │ ───▶  Response y_t
-     x_t        │  binary mask over      │        │  fuses selected  │
-                │  experts, {0,1}⁴       │        │  expert signals  │
-                └───────────▲────────────┘        └────────┬─────────┘
-                            │  GRPO                        │
-                            │  advantage                   ▼
-                    ┌───────┴──────────────────────────────────────────┐
-                    │  COMPOSITE REWARD   R = Σ β_k R_k − penalties    │
-                    │  R1 engagement  R2 intent  R3 context            │
-                    │  R4 diversity   R5 LLM-judge                     │
-                    └──────────────────────────────────────────────────┘
-```
+<p align="center">
+  <img src="assets/architecture.png" width="100%"
+       alt="PersuaRL architecture. The Selector policy reads the dialogue context and emits a binary mask over four frozen experts; the outputs of the selected experts are packed with the context and fused by the Generator into the agent response. Training alternates a GRPO Selector step and an SFT Generator step against five frozen reward models.">
+</p>
 
 **Selector.** At turn *t* the policy sees `(history, user utterance)` and emits a
 binary mask `o_t ∈ {0,1}⁴`, one of **15 non-empty routes**, encoded as a single
