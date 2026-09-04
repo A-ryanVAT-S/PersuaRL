@@ -104,40 +104,65 @@ penalties that shape the *routing decision* rather than the response: complexity
 
 ## Results
 
+All numbers below are as reported in the paper. **PersuaRL was trained and
+evaluated on four backbones only: Qwen 2.5 3B, Llama 3.2 3B, Phi-3 mini and
+Mistral 24B.** The larger proprietary/open models (GPT-5, GPT-4.1 mini, DeepSeek
+R1 Distill Llama 70B, Llama 3.3 70B, Qwen 3 32B, Phi-3-Medium 14B, Qwen 2.5 7B,
+Llama 3.1 8B) appear only as single-shot reference points — PersuaRL was never
+run on them.
+
 **InsureDial** and out-of-domain **DEAL**. `Single → SFT → PersuaRL` improves
-monotonically across every backbone.
+monotonically across every backbone it was actually run on.
 
 | Dataset | Model | BLEU-2 ↑ | METEOR ↑ | BERT-F1 ↑ | Distinct-2 ↑ | ROUGE-1 ↑ | LLM-J ↑ |
 |---|---|---|---|---|---|---|---|
-| **InsureDial** | GPT-5 | 0.036 | 0.093 | 0.828 | 0.982 | 0.232 | – |
-| | Llama 3.3 70B Instruct | 0.126 | 0.137 | 0.610 | 0.996 | 0.377 | 4.16 |
-| | Qwen 3 32B | 0.107 | 0.132 | 0.588 | 0.998 | 0.371 | 3.84 |
-| | Mistral 24B (Single) | 0.043 | 0.094 | 0.772 | 0.898 | 0.195 | 3.02 |
-| | Mistral 24B (SFT) | 0.324 | 0.226 | 0.815 | 0.990 | 0.574 | 3.65 |
-| | **PersuaRL (Mistral 24B)** | **0.355** | **0.241** | **0.873** | **0.992** | **0.596** | **4.12** |
+| **InsureDial** | GPT-5 *(single-shot only)* | 0.036 | 0.093 | 0.828 | 0.982 | 0.232 | – |
+| | GPT-4.1 mini *(single-shot only)* | 0.124 | 0.143 | 0.620 | 0.998 | 0.383 | – |
+| | DeepSeek R1 Distill Llama 70B *(single-shot only)* | 0.069 | 0.125 | 0.569 | 0.920 | 0.260 | 4.25 |
+| | Llama 3.3 70B Instruct *(single-shot only)* | 0.126 | 0.137 | 0.610 | 0.996 | 0.377 | 4.16 |
+| | Qwen 3 32B *(single-shot only)* | 0.107 | 0.132 | 0.588 | 0.998 | 0.371 | 3.84 |
+| | Phi-3-Medium 14B *(single-shot only)* | 0.169 | 0.167 | 0.655 | 0.995 | 0.441 | 3.78 |
+| | Qwen 2.5 7B Instruct *(single-shot only)* | 0.124 | 0.145 | 0.604 | 0.958 | 0.385 | 3.66 |
+| | Llama 3.1 8B Instruct *(single-shot only)* | 0.132 | 0.146 | 0.605 | 0.966 | 0.388 | 3.67 |
+| | Qwen 2.5 3B (Single) | 0.090 | 0.128 | 0.562 | 0.965 | 0.310 | 2.66 |
+| | Qwen 2.5 3B (SFT) | 0.305 | 0.217 | 0.727 | 0.991 | 0.556 | 3.28 |
+| | **PersuaRL (Qwen 2.5 3B)** | **0.375** | **0.250** | **0.760** | **0.991** | **0.609** | **3.81** |
 | | Llama 3.2 3B (Single) | 0.106 | 0.135 | 0.585 | 0.937 | 0.334 | 2.86 |
 | | Llama 3.2 3B (SFT) | 0.339 | 0.232 | 0.742 | 0.989 | 0.584 | 3.48 |
 | | **PersuaRL (Llama 3.2 3B)** | **0.398** | **0.276** | **0.771** | **0.989** | **0.631** | **3.95** |
-| | Phi-3 mini (SFT) | 0.362 | 0.242 | 0.752 | 0.988 | 0.600 | 3.39 |
+| | Phi-3 mini 128k (Single) | 0.181 | 0.156 | 0.641 | 0.980 | 0.429 | 2.79 |
+| | Phi-3 mini 128k (SFT) | 0.362 | 0.242 | 0.752 | 0.988 | 0.600 | 3.39 |
 | | **PersuaRL (Phi-3 mini)** | **0.374** | **0.261** | **0.762** | **0.990** | **0.611** | **3.86** |
-| **DEAL** (OOD) | Llama 3.2 3B (SFT) | 0.080 | **0.104** | 0.552 | 0.986 | 0.267 | 2.64 |
+| | Mistral 24B (Single) | 0.043 | 0.094 | 0.772 | 0.898 | 0.195 | 3.02 |
+| | Mistral 24B (SFT) | 0.324 | 0.226 | 0.815 | 0.990 | 0.574 | 3.65 |
+| | **PersuaRL (Mistral 24B)** | **0.355** | **0.241** | **0.873** | **0.992** | **0.596** | **4.12** |
+| **DEAL** (OOD) | Llama 3.2 3B (Single) | 0.049 | 0.085 | 0.519 | 0.937 | 0.195 | 2.41 |
+| | Llama 3.2 3B (SFT) | 0.080 | 0.104 | 0.552 | 0.986 | 0.267 | 2.64 |
 | | **PersuaRL (Llama 3.2 3B)** | **0.087** | 0.101 | 0.536 | **0.987** | **0.278** | **2.79** |
+| | Phi-3 mini 128k (Single) | 0.086 | 0.106 | 0.552 | 0.973 | 0.265 | 2.37 |
+| | Phi-3 mini 128k (SFT) | 0.089 | 0.110 | 0.558 | 0.984 | 0.273 | 2.56 |
+| | **PersuaRL (Phi-3 mini)** | **0.094** | **0.121** | **0.568** | **0.985** | **0.281** | **2.72** |
 
-A 3B PersuaRL model beats 14–70B baselines on BERT-F1: Phi-3 mini exceeds
-Phi-3 Medium 14B by ~16% and Qwen 3 32B by over 23%.
+A 3B PersuaRL model beats 14–70B single-shot baselines on BERT-F1: PersuaRL
+(Phi-3 mini) exceeds Phi-3-Medium 14B by roughly 16% and Qwen 3 32B by over 29%.
 
-**Human evaluation** (5-point scale, domain experts, 30% of the test set):
+**Human evaluation** (5-point scale, domain experts, 30% of the test set) —
+run on the three backbones PersuaRL was actually trained on:
 
 | Model | Fluency | Engagingness | Persuasive Eff. | Strategy Approp. | Resistance Handling |
 |---|---|---|---|---|---|
+| Llama 3.2 3B (SFT) | 3.11 | 2.94 | 2.46 | 2.88 | 3.38 |
+| **PersuaRL (Llama 3.2 3B)** | **4.12** | **4.39** | **4.36** | **4.29** | **4.46** |
+| Qwen 2.5 3B (SFT) | 3.19 | 2.98 | 2.86 | 3.10 | 3.61 |
+| **PersuaRL (Qwen 2.5 3B)** | **3.94** | **4.22** | **4.23** | **4.06** | **4.32** |
 | Mistral 24B (SFT) | 3.23 | 3.34 | 3.10 | 3.19 | 3.76 |
 | **PersuaRL (Mistral 24B)** | **4.26** | **4.39** | **4.54** | **4.33** | **4.45** |
-| Qwen 30B (SFT) | 3.19 | 3.33 | 3.14 | 3.16 | 3.62 |
-| **PersuaRL (Qwen 30B)** | **4.20** | **4.33** | **4.52** | **4.31** | **4.39** |
 
-Reward-guided selection also beats both routing baselines: PersuaRL reaches
-ROUGE-1 0.631 on Llama-3B against 0.572 for prompted tool selection and 0.545 for
-AllExpert.
+Reward-guided selection also beats prompted routing on the same backbone:
+PersuaRL (Llama 3.2 3B) reaches ROUGE-1 0.631 against 0.572 for prompted tool
+selection, and PersuaRL consistently outperforms the AllExpert baseline (all
+experts always on) across BLEU-2, BERT-F1 and ROUGE-1 on both the Llama-3B and
+Phi-3-mini backbones.
 
 ---
 
@@ -297,16 +322,17 @@ bash scripts/inference/run_pipeline.sh --mode prompting     # Fig. 2/4/5: prompt
 bash scripts/rl/train_grpo_single.sh                        # Table 13: GRPO, no selector
 ```
 
-Reward ablation on Qwen 2.5 3B (Table 12). R1, R2 and R5 are load-bearing:
+Reward ablation on Qwen 2.5 3B (Table 11). R1, R2 and R5 are load-bearing:
 
 | configuration | BLEU-2 | METEOR | BERT-F1 | Distinct-2 | ROUGE-1 |
 |---|---|---|---|---|---|
 | **PersuaRL (full)** | **0.375** | **0.250** | **0.760** | **0.991** | **0.609** |
 | − R1 engagement | 0.341 | 0.214 | 0.694 | 0.965 | 0.521 |
-| − R2 intent | 0.349 | 0.226 | 0.706 | 0.969 | 0.536 |
+| − R2 intent | 0.349 | 0.220 | 0.706 | 0.969 | 0.536 |
 | − R3 contextual | 0.351 | 0.229 | 0.721 | 0.985 | 0.563 |
 | − R4 repetition | 0.357 | 0.234 | 0.729 | 0.989 | 0.571 |
 | − R5 judge | 0.342 | 0.219 | 0.701 | 0.966 | 0.529 |
+| − (R1 + R2) | 0.335 | 0.211 | 0.691 | 0.961 | 0.511 |
 | no rewards | 0.323 | 0.205 | 0.684 | 0.948 | 0.501 |
 
 The full ablation map is in
@@ -386,12 +412,14 @@ dialogues and annotations.
 ## Citation
 
 ```bibtex
-@inproceedings{persuarl2026,
-  title     = {PersuaRL: Reinforcement Learning-Driven Multi-Expert Selection
-               for Persuasive Dialogue Generation in Insurance},
-  author    = {Anonymous},
-  booktitle = {Proceedings of the Association for Computational Linguistics},
-  year      = {2026}
+@misc{kirti2026persuarlreinforcementlearningdrivenmultiexpert,
+      title={PersuaRL: Reinforcement Learning-Driven Multi-Expert Selection for Persuasive Dialogue Generation in Insurance}, 
+      author={Rohan Kirti and Akash Ghosh and Aryan Vats and Niladri Ghosh and Shipra Shriparn and Roshni Ramnani and Anutosh Maitra and Sriparna Saha},
+      year={2026},
+      eprint={2609.01188},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2609.01188}, 
 }
 ```
 
